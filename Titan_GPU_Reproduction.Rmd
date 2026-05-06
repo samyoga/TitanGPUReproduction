@@ -195,6 +195,29 @@ summary(cox_dbe)
 cat("Cox Model: OTB Event\n\n")
 summary(cox_otb)
 ```
+### 5.7 Cox model Analysis for Old and New Batch
+
+```{r}
+levels(data$batch)
+```
+
+```{r}
+data_old <- data %>% filter(batch == "old")
+data_new <- data %>% filter(batch == "new")
+```
+
+```{r}
+cox_old  <- coxph(Surv(time, event) ~ col + row + cage + slot + node, data = data_old)
+cox_new <- coxph(Surv(time, event) ~ col + row + cage + slot + node, data = data_new)
+
+cat("Cox Model: Old Batch\n\n")
+summary(cox_old)
+
+cat("Cox Model: New Batcht\n\n")
+summary(cox_new)
+```
+
+
 
 
 
