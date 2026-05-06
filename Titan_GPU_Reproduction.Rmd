@@ -14,7 +14,7 @@ The paper uses survival analysis methods (Kaplan-Meier + Cox). The paper also do
 ```{r}
 #installing required packages
 #install.packages(c("tidyverse", "lubridate", "Survival", "survminer", "forestmodel"))
-install.packages(c("scales", "patchwork"))
+#install.packages(c("scales", "patchwork"))
 
 #loading the packages
 library(tidyverse)
@@ -34,15 +34,23 @@ Two datasets are used: `gc_summary_loc.csv` and `gc_full_csv`.
 The csv file (gc_summary_loc.csv) is a pre-processed GPU lifetime data. So, directly using this for the survival 
 analysis technique
 ```{r}
+# Summary dataset: one row per GPU serial number
 data <- read.csv("./data/gc_summary_loc.csv")
 
 str(data)
 summary(data)
 ```
 
+```{r}
+# Full dataset: one row per GPU-location lifetime segment
+gc_full <- read.csv("./data/gc_full.csv")
+str(gc_full)
+```
+
 Defining the required variables for survival analysis:
 Here, the two columns 'years' and 'dead' from the dataset are crucial variables as years shows the lifetime of each GPU and dead is the event where 1 shows GPU failure and 0 shows GPU did not fail so censored. The event can be Dual Bit Error (DBE) or Off The Bus (OTB).
 ```{r}
+#survival time and event variables
 data$time <- data$years
 data$event <- data$dead
 ```
@@ -59,6 +67,7 @@ data$row  <- as.factor(data$row)
 data$cage <- as.factor(data$cage)
 data$slot <- as.factor(data$slot)
 data$node <- as.factor(data$node)
+data$batch <- as.factor(data$batch)
 ```
 
 Creating survival object:
