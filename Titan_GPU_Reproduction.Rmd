@@ -140,7 +140,8 @@ summary(cox_model)
 ### 5.2 Interpreting Hazard Ratios
 
 ```{r}
-exp(coef(cox_model))
+hazard_ratio <- exp(coef(cox_model))
+hazard_ratio
 ```
 
 ### 5.3 Forest Plot
@@ -208,7 +209,11 @@ data_new <- data %>% filter(batch == "new")
 
 ```{r}
 cox_old  <- coxph(Surv(time, event) ~ col + row + cage + slot + node, data = data_old)
-cox_new <- coxph(Surv(time, event) ~ col + row + cage + slot + node, data = data_new)
+
+#grouping column into fewer bins to avoid plot error;
+data_new$col_group <- cut(as.numeric(as.character(data_new$col)),breaks = c(0, 8, 16, 24), labels = c("low", "mid", "high"))
+
+cox_new <- coxph(Surv(time, event) ~ col_group + row + cage + slot + node, data = data_new)
 
 cat("Cox Model: Old Batch\n\n")
 summary(cox_old)
@@ -217,6 +222,13 @@ cat("Cox Model: New Batcht\n\n")
 summary(cox_new)
 ```
 
+```{r}
+forest_model_old <- forest_model(cox_old) + ggtitle("Cox Model Analysis Plot for Old Batch")
+forest_model_new <- forest_model(cox_new) + ggtitle("Cox Model Analysis Plot for New Batch")
+
+print(forest_model_old)
+print(forest_model_new)
+```
 
 
 
