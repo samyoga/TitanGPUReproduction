@@ -10,4 +10,20 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## R Markdown
+The paper uses survival analysis methods (Kaplan-Meier + Cox). So, installing and loading the required libraries.
+```{r}
+#installing required packages
+#install.packages(c("tidyverse", "lubridate", "Survival", "survminer", "forestmodel"))
 
+#loading the packages
+library(tidyverse)
+library(lubridate)
+library(survival)
+library(survminer)
+library(forestmodel)
+```
+
+
+Loading the dataset
+```{r}
+```
