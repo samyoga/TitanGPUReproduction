@@ -92,4 +92,12 @@ exp(coef(cox_model))
 forest_model(cox_model)
 ```
 
+Schoenfeld residual test
+```{r}
+ph_test <- cox.zph(cox_model)
+ph_test
+plot(ph_test)
+```
+
+
 
