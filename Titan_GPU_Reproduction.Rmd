@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Load Libraries
+## 1. Load Libraries
 The paper uses survival analysis methods (Kaplan-Meier + Cox). The paper also does Time Between Failure analysis. So, installing and loading the required libraries.
 ```{r}
 #installing required packages
@@ -27,7 +27,7 @@ library(patchwork)
 ```
 
 
-## 1. Load the dataset
+## 2. Load the dataset
 
 Two datasets are used: `gc_summary_loc.csv` and `gc_full_csv`.
 
@@ -47,6 +47,8 @@ gc_full <- read.csv("./data/gc_full.csv")
 str(gc_full)
 ```
 
+## 3. Survival Analysis Setup
+### 3.1 Cleaning and pre-processing dataset
 Defining the required variables for survival analysis:
 Here, the two columns 'years' and 'dead' from the dataset are crucial variables as years shows the lifetime of each GPU and dead is the event where 1 shows GPU failure and 0 shows GPU did not fail so censored. The event can be Dual Bit Error (DBE) or Off The Bus (OTB).
 ```{r}
@@ -80,7 +82,9 @@ cat("\nFailures by batch:\n")
 print(table(data$batch, data$event))
 ```
 
-Creating survival object:
+
+### 3.2 Creating Objects for Survival Analysis
+
 ```{r}
 #double bit error object for survival analysis
 surv_dbe_obj <- Surv(time = data$time, event = data$dead_dbe)
@@ -90,8 +94,10 @@ surv_otb_obj <- Surv(time = data$time, event = data$dead_otb)
 surv_obj <- Surv(time = data$time, event = data$event)
 ```
 
+## 4. Survival Analysis Method 1: Kaplan-Meier Estimation
 
-Kaplan-Meier Estimation:
+### 4.1 Kaplan Meier Fit by Cage
+
 ```{r}
 kaplanmeier_fit <- survfit(surv_obj ~ cage, data = data)
 
@@ -107,7 +113,23 @@ plot_kaplanmeier <- ggsurvplot(
 print(plot_kaplanmeier)
 ```
 
-Cox proportional hazard model:
+### 4.2 Kaplan-Meier log-log diagnostic model plot
+
+For proportional hazards check:
+
+```{r}
+ggsurvplot(
+  kaplanmeier_fit,
+  data = data,
+  fun = "cloglog",
+  ggtheme = theme_minimal()
+)
+```
+
+## 5. Survival Analysis Method 2: Cox proportional hazard model
+
+### 5.1 Cox model with All Location Covariates
+
 ```{r}
 cox_model <- coxph(Surv(time, event) ~ col + row + cage + slot + node, data = data
 )
@@ -115,15 +137,20 @@ cox_model <- coxph(Surv(time, event) ~ col + row + cage + slot + node, data = da
 summary(cox_model)
 ```
 
-Interpreting hazard ratios:
+### 5.2 Interpreting Hazard Ratios
+
 ```{r}
 exp(coef(cox_model))
 ```
+
+### 5.3 Forest Plot
+
 ```{r}
 forest_model(cox_model)
 ```
 
-Schoenfeld residual test
+### 5.4. Schoenfeld residual test
+
 ```{r}
 ph_test <- cox.zph(cox_model)
 ph_test
@@ -134,7 +161,7 @@ plot(ph_test)
 summary(cox_model)
 ```
 
-Adjusted survival curves by cage
+### 5.5. Adjusted survival curves by cage
 ```{r}
 newdata_adj <- expand.grid(
   cage = levels(data$cage),
@@ -151,16 +178,9 @@ ggsurvplot(
   data = newdata_adj,
   conf.int = TRUE,
   ggtheme = theme_minimal(),
-  legend.title = "Cage"
+  legend.title = "Adjusted Survival Curves by Cage"
 )
 ```
 
-```{r}
-ggsurvplot(
-  kaplanmeier_fit,
-  data = data,
-  fun = "cloglog",
-  ggtheme = theme_minimal()
-)
-```
+
 
