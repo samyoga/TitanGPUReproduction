@@ -76,4 +76,20 @@ plot_kaplanmeier <- ggsurvplot(
 print(plot_kaplanmeier)
 ```
 
+Cox proportional hazard model:
+```{r}
+cox_model <- coxph(Surv(time, event) ~ col + row + cage + slot + node, data = data
+)
+
+summary(cox_model)
+```
+
+Interpreting hazard ratios:
+```{r}
+exp(coef(cox_model))
+```
+```{r}
+forest_model(cox_model)
+```
+
 
