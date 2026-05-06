@@ -168,7 +168,8 @@ newdata_adj <- expand.grid(
   col  = levels(data$col)[1],
   row  = levels(data$row)[1],
   slot = levels(data$slot)[1],
-  node = levels(data$node)[1]
+  node = levels(data$node)[1],
+  batch = levels(data$batch)[1]
 )
 
 fit_adj <- survfit(cox_model, newdata = newdata_adj)
