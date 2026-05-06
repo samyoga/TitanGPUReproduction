@@ -107,13 +107,65 @@ plot_kaplanmeier <- ggsurvplot(
   conf.int = TRUE,
   risk.table = TRUE,
   ggtheme = theme_minimal(),
-  risk.table.height = 0.30
+  risk.table.height = 0.30,
+  title = "Kaplan Meier Survival Analysis Plot by Cage for Combine Failure Events"
+)
+
+print(plot_kaplanmeier)
+```
+### 4.2 Kaplan-Meier Analysis for DBE and OTB Event by Cage
+
+```{r}
+kaplanmeier_fit_dbe <- survfit(surv_dbe_obj ~ cage, data = data)
+
+plot_kaplanmeier_DBE <- ggsurvplot(
+  kaplanmeier_fit_dbe,
+  data = data,
+  conf.int = TRUE,
+  risk.table = TRUE,
+  ggtheme = theme_minimal(),
+  risk.table.height = 0.30,
+  title = "Kaplan Meier Survival Analysis Plot by Cage for DBE Event"
+)
+
+print(plot_kaplanmeier_DBE)
+```
+```{r}
+kaplanmeier_fit_otb <- survfit(surv_otb_obj ~ cage, data = data)
+
+plot_kaplanmeier_OTB <- ggsurvplot(
+  kaplanmeier_fit_otb,
+  data = data,
+  conf.int = TRUE,
+  risk.table = TRUE,
+  ggtheme = theme_minimal(),
+  risk.table.height = 0.30,
+  title = "Kaplan Meier Survival Analysis Plot by Cage for OTB Event"
+)
+
+print(plot_kaplanmeier_OTB)
+```
+### 4.3 Kaplan-Meier Analysis for Old vs New Batch Data
+
+```{r}
+kaplanmeier_fit_batch <- survfit(surv_obj ~ batch, data = data)
+
+plot_kaplanmeier <- ggsurvplot(
+  kaplanmeier_fit_batch,
+  data = data,
+  conf.int = TRUE,
+  risk.table = TRUE,
+  ggtheme = theme_minimal(),
+  risk.table.height = 0.30,
+  legend.labs = c("Old Batch", "New Batch"),
+  title = "Kaplan Meier Survival Analysis Plot by Batch for Old vs New"
 )
 
 print(plot_kaplanmeier)
 ```
 
-### 4.2 Kaplan-Meier log-log diagnostic model plot
+
+### 4.4 Kaplan-Meier log-log diagnostic model plot
 
 For proportional hazards check:
 
