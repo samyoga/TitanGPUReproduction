@@ -24,6 +24,23 @@ library(forestmodel)
 ```
 
 
-Loading the dataset
+Loading the dataset:
+The csv file (gpu_summary_loc.csv) is a pre-processed GPU lifetime data. So, directly using this for the survival analysis technique
 ```{r}
+data <- read.csv("./data/gc_summary_loc.csv")
+
+str(data)
+summary(data)
+```
+
+Defining the required variables for survival analysis:
+Here, the two columns 'years' and 'dead' from the dataset are crucial variables as years shows the lifetime of each GPU and dead is the event where 1 shows GPU failure and 0 shows GPU did not fail so censored. The event can be Dual Bit Error (DBE) or Off The Bus (OTB).
+```{r}
+data$time <- data$years
+data$event <- data$dead
+```
+
+```{r}
+#cleaning the data to avoid missing values
+data <- data %>% filter(!is.na(time), time > 0)
 ```
