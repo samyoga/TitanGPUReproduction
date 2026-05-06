@@ -99,5 +99,18 @@ ph_test
 plot(ph_test)
 ```
 
+```{r}
+summary(cox_model)
+```
 
+Adjusted survival curves by cage
+```{r}
+adj_plot <- ggsurvplot(
+  survfit(cox_model, newdata = data),
+  data = data,
+  conf.int = TRUE,
+  ggtheme = theme_minimal()
+)
 
+adj_plot
+```
