@@ -10,10 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## R Markdown
-The paper uses survival analysis methods (Kaplan-Meier + Cox). So, installing and loading the required libraries.
+The paper uses survival analysis methods (Kaplan-Meier + Cox). The paper also does Time Between Failure analysis. So, installing and loading the required libraries.
 ```{r}
 #installing required packages
 #install.packages(c("tidyverse", "lubridate", "Survival", "survminer", "forestmodel"))
+install.packages(c("scales", "patchwork"))
 
 #loading the packages
 library(tidyverse)
@@ -21,11 +22,13 @@ library(lubridate)
 library(survival)
 library(survminer)
 library(forestmodel)
+library(scales)
+library(patchwork)
 ```
 
 
 Loading the dataset:
-The csv file (gpu_summary_loc.csv) is a pre-processed GPU lifetime data. So, directly using this for the survival analysis technique
+The csv file (gc_summary_loc.csv) is a pre-processed GPU lifetime data. So, directly using this for the survival analysis technique
 ```{r}
 data <- read.csv("./data/gc_summary_loc.csv")
 
