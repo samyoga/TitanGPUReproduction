@@ -60,5 +60,20 @@ surv_obj <- Surv(time = data$time, event = data$event)
 ```
 
 
+Kaplan-Meier Estimation:
+```{r}
+kaplanmeier_fit <- survfit(surv_obj ~ cage, data = data)
+
+plot_kaplanmeier <- ggsurvplot(
+  kaplanmeier_fit,
+  data = data,
+  conf.int = TRUE,
+  risk.table = TRUE,
+  ggtheme = theme_minimal(),
+  risk.table.height = 0.30
+)
+
+print(plot_kaplanmeier)
+```
 
 
