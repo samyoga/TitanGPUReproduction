@@ -105,12 +105,31 @@ summary(cox_model)
 
 Adjusted survival curves by cage
 ```{r}
-adj_plot <- ggsurvplot(
-  survfit(cox_model, newdata = data),
-  data = data,
-  conf.int = TRUE,
-  ggtheme = theme_minimal()
+newdata_adj <- expand.grid(
+  cage = levels(data$cage),
+  col  = levels(data$col)[1],
+  row  = levels(data$row)[1],
+  slot = levels(data$slot)[1],
+  node = levels(data$node)[1]
 )
 
-adj_plot
+fit_adj <- survfit(cox_model, newdata = newdata_adj)
+
+ggsurvplot(
+  fit_adj,
+  data = newdata_adj,
+  conf.int = TRUE,
+  ggtheme = theme_minimal(),
+  legend.title = "Cage"
+)
 ```
+
+```{r}
+ggsurvplot(
+  kaplanmeier_fit,
+  data = data,
+  fun = "cloglog",
+  ggtheme = theme_minimal()
+)
+```
+
