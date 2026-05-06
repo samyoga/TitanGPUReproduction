@@ -44,3 +44,21 @@ data$event <- data$dead
 #cleaning the data to avoid missing values
 data <- data %>% filter(!is.na(time), time > 0)
 ```
+
+Converting Predictors to categorical variables using factor for cox model:
+```{r}
+data$col <- as.factor(data$col)
+data$row  <- as.factor(data$row)
+data$cage <- as.factor(data$cage)
+data$slot <- as.factor(data$slot)
+data$node <- as.factor(data$node)
+```
+
+Creating survival object:
+```{r}
+surv_obj <- Surv(time = data$time, event = data$event)
+```
+
+
+
+
