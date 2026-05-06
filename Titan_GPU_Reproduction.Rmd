@@ -131,7 +131,7 @@ ggsurvplot(
 ### 5.1 Cox model with All Location Covariates
 
 ```{r}
-cox_model <- coxph(Surv(time, event) ~ col + row + cage + slot + node, data = data
+cox_model <- coxph(Surv(time, event) ~ col + row + cage + slot + node + batch, data = data
 )
 
 summary(cox_model)
