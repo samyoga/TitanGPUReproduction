@@ -283,5 +283,78 @@ print(forest_model_new)
 ```
 
 
+## 6. Time Between Failures (TBF) Aanalysis:
+We will be using `gc_full.csv` to compute device-level Mean Time Between Failures (MTBF) for DBE and OTB events separately
+
+```{r}
+names(gc_full)
+table(gc_full$event)
+```
+
+Preprocessing of `gc_full.csv` for TBF analysis:
+```{r}
+# Parsing datetime columns and event indicator
+gc_full <- gc_full %>% mutate( 
+  insert = ymd_hms(insert, quiet = TRUE), 
+  remove = ymd_hms(remove, quiet = TRUE),
+  event_flag = ifelse(event %in% c("DBE", "OTB"), 1, 0))
+
+# Identifying old vs. new batch by first insert date per SN
+batch_labels <- gc_full %>% 
+  group_by(SN) %>% 
+  summarise(first_insert = min(insert, na.rm = TRUE)) %>% 
+  mutate(batch_tbf = if_else(year(first_insert) >= 2016, "New", "Old"))
+
+gc_full <- gc_full %>% left_join(batch_labels, by = "SN")
+```
+
+```{r}
+# Computing device-level MTBF for each failure type
+# For the first event considering time from insert to event and for subsequent event considering time since previous event on the same SN
+compute_mtbf <- function(df, event_col) {
+  df %>%
+    filter(event == event_col) %>%
+    arrange(SN, insert) %>%
+    group_by(SN) %>%
+    mutate(
+      prev_remove = lag(remove),
+      tbf_years   = if_else(
+        is.na(prev_remove),
+        as.numeric(difftime(insert, first(insert), units = "days")) / 365.25,
+        as.numeric(difftime(insert, prev_remove,   units = "days")) / 365.25
+      )
+    ) %>%
+    filter(tbf_years > 0) %>%
+    summarise(mtbf = mean(tbf_years, na.rm = TRUE), .groups = "drop") %>%
+    left_join(batch_labels %>% select(SN, batch_tbf), by = "SN") %>% 
+    mutate(failure_type = event_col)
+}
+
+mtbf_dbe <- compute_mtbf(gc_full, "DBE")
+mtbf_otb <- compute_mtbf(gc_full, "OTB")
+mtbf_all <- bind_rows(mtbf_dbe, mtbf_otb)
+```
+
+```{r}
+#histogram of device-level MTBFs by batch and failure type
+mtbf_all <- mtbf_all %>% mutate(
+    batch_tbf = as.factor(batch_tbf),
+    failure_type = toupper(failure_type)) %>% filter(!is.na(batch_tbf))
+
+ggplot(mtbf_all,
+       aes(x = mtbf, fill = failure_type)) +
+  geom_histogram(binwidth = 0.2, position = "dodge", alpha = 0.8) +
+  facet_wrap(~batch_tbf, ncol = 2) +
+  scale_fill_manual(
+    values = c("DBE" = "blue", "OTB" = "red")) +
+  labs(
+    title = "Distribution of Device-Level MTBFs",
+    x     = "MTBF (years)",
+    y     = "Count",
+    fill  = "Failure Type"
+  ) +
+  theme_minimal()
+```
+
 
 
