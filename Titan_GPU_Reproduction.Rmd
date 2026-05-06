@@ -67,11 +67,26 @@ data$row  <- as.factor(data$row)
 data$cage <- as.factor(data$cage)
 data$slot <- as.factor(data$slot)
 data$node <- as.factor(data$node)
+
+#adding batch variable and converting to categorical for considering old and new batch. Old batch - inserted before 2016 and new batch - inserted in 2016 or later.
 data$batch <- as.factor(data$batch)
+
+cat("Total GPUs in analysis:", nrow(data), "\n")
+cat("Events (failures):", sum(data$event), "\n")
+cat("Censored:", sum(data$event == 0), "\n")
+cat("\nBatch breakdown:\n")
+print(table(data$batch))
+cat("\nFailures by batch:\n")
+print(table(data$batch, data$event))
 ```
 
 Creating survival object:
 ```{r}
+#double bit error object for survival analysis
+surv_dbe_obj <- Surv(time = data$time, event = data$dead_dbe)
+#OTB error object for survival analysis
+surv_otb_obj <- Surv(time = data$time, event = data$dead_otb)
+#combined DBE and OTB for survival analysis
 surv_obj <- Surv(time = data$time, event = data$event)
 ```
 
