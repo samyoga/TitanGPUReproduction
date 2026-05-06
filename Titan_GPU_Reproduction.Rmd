@@ -183,5 +183,18 @@ ggsurvplot(
 )
 ```
 
+### 5.6. Separate Cox model for DBE and OTB error events
+
+```{r}
+cox_dbe <- coxph( Surv(time, dead_dbe) ~ col + row + cage + slot + node + batch, data = data)
+cox_otb <- coxph( Surv(time, dead_otb) ~ col + row + cage + slot + node + batch, data = data)
+
+cat("Cox Model: DBE Event\n\n")
+summary(cox_dbe)
+
+cat("Cox Model: OTB Event\n\n")
+summary(cox_otb)
+```
+
 
 
