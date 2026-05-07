@@ -1,0 +1,5 @@
+# Treat R Markdown as R code (for language stats)
+*.Rmd linguist-language=R
+
+# Ignore HTML output from language stats
+*.html linguist-generated=true
