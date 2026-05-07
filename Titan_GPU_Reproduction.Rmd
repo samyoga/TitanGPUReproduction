@@ -31,8 +31,7 @@ library(patchwork)
 
 Two datasets are used: `gc_summary_loc.csv` and `gc_full_csv`.
 
-The csv file (gc_summary_loc.csv) is a pre-processed GPU lifetime data. So, directly using this for the survival 
-analysis technique
+The csv file (gc_summary_loc.csv) is a pre-processed GPU lifetime data. So, directly using this for the survival analysis technique
 ```{r}
 # Summary dataset: one row per GPU serial number
 data <- read.csv("./data/gc_summary_loc.csv")
@@ -247,6 +246,14 @@ summary(cox_dbe)
 
 cat("Cox Model: OTB Event\n\n")
 summary(cox_otb)
+```
+
+```{r}
+forest_model_dbe <- forest_model(cox_dbe) + ggtitle("Cox Model Analysis Plot for DBE Failure Event")
+forest_model_otb <- forest_model(cox_otb) + ggtitle("Cox Model Analysis Plot for OTB Failure Event")
+
+print(forest_model_dbe)
+print(forest_model_otb)
 ```
 ### 5.7 Cox model Analysis for Old and New Batch
 
